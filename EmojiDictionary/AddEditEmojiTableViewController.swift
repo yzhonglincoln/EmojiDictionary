@@ -19,6 +19,7 @@ class AddEditEmojiTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
         
+        // assign emoji editing
         if let emoji = emoji {
             symbolTextField.text = emoji.symbol
             nameTextField.text = emoji.name
@@ -26,21 +27,26 @@ class AddEditEmojiTableViewController: UITableViewController {
             usageTextField.text = emoji.usage
         }
         
+        // determine when save button enable
         updateSaveButtonState()
     }
     
+    // outlets of text fields and button
     @IBOutlet weak var symbolTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var descriptionTextField: UITextField!
     @IBOutlet weak var usageTextField: UITextField!
     @IBOutlet weak var saveButton: UIBarButtonItem!
     
+    // determine when save button enable
     @IBAction func textEditingChanged(_ sender: UITextField) {
         updateSaveButtonState()
     }
     
+    // for emoji adding or editing
     var emoji: Emoji?
     
+    // function determine when save button enable
     func updateSaveButtonState() {
         let symbolText = symbolTextField.text ?? ""
         let nameText = nameTextField.text ?? ""
@@ -49,6 +55,7 @@ class AddEditEmojiTableViewController: UITableViewController {
         saveButton.isEnabled = !symbolText.isEmpty && !nameText.isEmpty && !descriptionText.isEmpty && !usageText.isEmpty
     }
     
+    // when save button pressed, unwind
     override func prepare(for segue: UIStoryboardSegue, sender:
         Any?) {
         super.prepare(for: segue, sender: sender)

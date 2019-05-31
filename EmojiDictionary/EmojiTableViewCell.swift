@@ -21,10 +21,12 @@ class EmojiTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    // outlets of labels
     @IBOutlet weak var symbolLabel: UILabel!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     
+    // update emoji in cell
     func update(with emoji: Emoji) {
         symbolLabel.text = emoji.symbol
         nameLabel.text = emoji.name

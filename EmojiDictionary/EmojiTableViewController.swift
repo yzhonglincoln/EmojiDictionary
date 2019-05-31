@@ -19,8 +19,12 @@ class EmojiTableViewController: UITableViewController {
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         self.navigationItem.leftBarButtonItem = self.editButtonItem
         
+        // assign row height
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 44.0
+        
+        // load emojis
+        emojis.append(contentsOf: Emoji.loadFromFile())
     }
     
     // refresh data
@@ -38,21 +42,7 @@ class EmojiTableViewController: UITableViewController {
     var cellLayoutMarginsFollowReadableWidth = true
     
     // array of emojis
-    var emojis: [Emoji] = [
-        Emoji(symbol: "😀", name: "Grinning Face", description: "A typical smiley face.", usage: "happiness"),
-        Emoji(symbol: "😕", name: "Confused Face", description: "A confused, puzzled face.", usage: "unsure what to think; displeasure"),
-        Emoji(symbol: "😍", name: "Heart Eyes", description: "A smiley face with hearts for eyes.", usage: "love of something; attractive"),
-        Emoji(symbol: "👮", name: "Police Officer", description: "A police officer wearing a blue cap with a gold badge.", usage: "person of authority"),
-        Emoji(symbol: "🐢", name: "Turtle", description: "A cute turtle.", usage: "Something slow"),
-        Emoji(symbol: "🐘", name: "Elephant", description: "A gray elephant.", usage: "good memory"),
-        Emoji(symbol: "🍝", name: "Spaghetti", description: "A plate of spaghetti.", usage: "spaghetti"),
-        Emoji(symbol: "🎲", name: "Die", description: "A single die.", usage: "taking a risk, chance; game"),
-        Emoji(symbol: "⛺️", name: "Tent", description: "A small tent.", usage: "camping"),
-        Emoji(symbol: "📚", name: "Stack of Books", description: "Three colored books stacked on each other.", usage: "homework, studying"),
-        Emoji(symbol: "💔", name: "Broken Heart", description: "A red, broken heart.", usage: "extreme sadness"),
-        Emoji(symbol: "💤", name: "Snore", description: "Three blue \'z\'s.", usage: "tired, sleepiness"),
-        Emoji(symbol: "🏁", name: "Checkered Flag", description: "A black-and-white checkered flag.", usage: "completion")
-    ]
+    var emojis: [Emoji] = []
 
     // return number of sections
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -79,18 +69,11 @@ class EmojiTableViewController: UITableViewController {
         return cell
     }
     
-    // let cell be able to be selected
-    /*
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let emoji = emojis[indexPath.row]
-        print("\(emoji.symbol) \(indexPath)")
-    }
-    */
-    
     // let cell be able to be moved around
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let movedEmoji = emojis.remove(at: sourceIndexPath.row)
         emojis.insert(movedEmoji, at: destinationIndexPath.row)
+        Emoji.saveToFile(emojis: emojis)
         tableView.reloadData()
     }
     
@@ -103,6 +86,7 @@ class EmojiTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             emojis.remove(at: indexPath.row)
+            Emoji.saveToFile(emojis: emojis)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
     }
@@ -119,6 +103,7 @@ class EmojiTableViewController: UITableViewController {
         }
     }
     
+    // when save to emoji table view
     @IBAction func unwindToEmojiTableView(unwindSegue: UIStoryboardSegue) {
         guard unwindSegue.identifier == "saveUnwind" else { return }
         let sourceViewController = unwindSegue.source as! AddEditEmojiTableViewController
@@ -126,10 +111,12 @@ class EmojiTableViewController: UITableViewController {
         if let emoji = sourceViewController.emoji {
             if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 emojis[selectedIndexPath.row] = emoji
+                Emoji.saveToFile(emojis: emojis)
                 tableView.reloadRows(at: [selectedIndexPath], with: .none)
             } else {
                 let newIndexPath = IndexPath(row: emojis.count, section: 0)
                 emojis.append(emoji)
+                Emoji.saveToFile(emojis: emojis)
                 tableView.insertRows(at: [newIndexPath], with: .automatic)
             }
         }
